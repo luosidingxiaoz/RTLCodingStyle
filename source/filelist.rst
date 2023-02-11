@@ -9,7 +9,7 @@ For an IP filelist, all files should use the same prefix, and this prefix needs 
 
 An example is as follows:
 
-.. code-block:: filelist
+.. code-block:: 
 
     sc_bus_arbiter.sv
     sc_bus_decoder.sv
@@ -17,7 +17,7 @@ An example is as follows:
 
 In general, the prefix used is the abbreviation of this IP (but be aware of the uniqueness).
 
-2. Centralized processing of macro definitions and timely cancellation of definitions
+1. Centralized processing of macro definitions and timely cancellation of definitions
 
 If an IP needs to use macro definitions, then all the defines must be grouped together in one file and placed at the beginning of the filelist.
 
@@ -25,7 +25,7 @@ Correspondingly, all defines must have their undefine counterparts, which are al
 
 An example is as follows:
 
-.. code-block:: filelist
+.. code-block:: 
 
     sc_bus_define.sv
     sc_bus_arbiter.sv
