@@ -15,6 +15,9 @@ asdfadf
    :titlesonly:
    
    filelist.rst
+   module.rst
+   parameter.rst
+   
 
 
    

@@ -3,7 +3,7 @@ Filelist
 
 The following rules should be observed when defining the filelist:
 
-1. Keep the same prefix
+1. **Keep the same prefix**
 
 For an IP filelist, all files should use the same prefix, and this prefix needs to be guaranteed to be unique within the project.
 
@@ -17,7 +17,7 @@ An example is as follows:
 
 In general, the prefix used is the abbreviation of this IP (but be aware of the uniqueness).
 
-1. Centralized processing of macro definitions and timely cancellation of definitions
+2. **Centralized processing of macro definitions and timely cancellation of definitions**
 
 If an IP needs to use macro definitions, then all the defines must be grouped together in one file and placed at the beginning of the filelist.
 
