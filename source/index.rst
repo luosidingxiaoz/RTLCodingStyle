@@ -14,6 +14,8 @@ asdfadf
    :caption: Contents
    :titlesonly:
    
+   indentation_and_alignment.rst
+   variable_naming.rst
    filelist.rst
    module.rst
    parameter.rst
