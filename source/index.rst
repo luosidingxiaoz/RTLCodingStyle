@@ -19,11 +19,14 @@ asdfadf
    filelist.rst
    module.rst
    parameter.rst
-   
-
-
-   
-
+   generics.rst
+   generate_if_for.rst
+   structure.rst
+   macro.rst
+   combinational_logic.rst
+   sequential_logic.rst 
+   clock_and_reset.rst
+   examples.rst
 
 Indices and tables
 ==================
