@@ -6,7 +6,7 @@
 RTL Coding Style
 ==========================================
 
-asdfadf
+This is an RTL Coding Style tutorial.
 
 
 .. toctree::
@@ -19,7 +19,7 @@ asdfadf
    filelist.rst
    module.rst
    parameter.rst
-   generics.rst
+   datatype_parameter.rst
    generate_if_for.rst
    structure.rst
    macro.rst
@@ -28,9 +28,9 @@ asdfadf
    clock_and_reset.rst
    examples.rst
 
-Indices and tables
-==================
+.. Indices and tables
+.. ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`
