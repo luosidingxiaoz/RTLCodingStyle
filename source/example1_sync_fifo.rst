@@ -1,8 +1,20 @@
 Sync FIFO
-============
+============================
+
+below is an implementation for sync fifo which: 
+
+- utilize two pointers for recording write/read position
+
+- implemente a counter to record used space
+
+- follow handshake protocol. req_rdy LOW -> full, ack_vld LOW -> empty
+
+- support user defined payload
+
+- non-reset mem
+
 .. code-block:: systemverilog
 
-    `timescale 1ns / 1ps
     //////////////////////////////////////////////////////////////////////////////////
     // Company: URBADASS.LTD
     // Engineer: zick
@@ -22,35 +34,34 @@ Sync FIFO
     //////////////////////////////////////////////////////////////////////////////////
     module sync_fifo
         #(
-            parameter int unsigned DEPTH    = 8             ,
-            parameter int unsigned DWIDTH   = 32            ,
-            parameter int unsigned AWIDTH   = $clog2(DEPTH)   
+            parameter   int unsigned DEPTH    = 8             ,
+            parameter   type         PLD_TYPE = logic[32-1:0] ,  
+            localparam  int unsigned AWIDTH   = $clog2(DEPTH)
         )(
-            input                       clk     ,
-            input                       rst_n   ,
+            input   logic               clk    ,
+            input   logic               rst_n  ,
             // Req
-            input                       req_vld ,
-            output  logic               req_rdy ,
-            input   logic [DWIDTH-1:0]  req_data,
+            input                       req_vld,
+            output  logic               req_rdy,
+            input   PLD_TYPE            req_pld,
             // ACK
-            output  logic               ack_vld ,
-            input                       ack_rdy ,
-            output  logic [DWIDTH-1:0]  ack_data
+            output  logic               ack_vld,
+            input                       ack_rdy,
+            output  PLD_TYPE            ack_pld
         );
 
     //=================================================================
     // Internal Signal
     //=================================================================
-        logic [DWIDTH-1:0]  data_mem [DEPTH-1:0];
+        PLD_TYPE            pld_mem  [DEPTH-1:0];
         logic [AWIDTH  :0]  wr_ptr              ;
         logic [AWIDTH  :0]  rd_ptr              ;
         logic               rd_en               ;
         logic               wr_en               ;
+        logic [AWIDTH  :0]  fifo_cnt            ;
         logic               fifo_full           ;
         logic               fifo_empty          ;
-
-        logic               dummy_wire1;
-        logic               dummy_wire2;
+        // dummy wire to satisfy compiler
 
     //=================================================================
     // WR/RD enable
@@ -59,10 +70,26 @@ Sync FIFO
         assign rd_en = ack_vld && ack_rdy;
 
     //=================================================================
+    // depth counter
+    //=================================================================
+        always_ff @(posedge clk or negedge rst_n) begin
+            if (~rst_n) begin
+                fifo_cnt <= {AWIDTH{1'b0}};
+            end
+            else begin
+                case ({rd_en, wr_en})
+                    {1'b1, 1'b0}: fifo_cnt <= fifo_cnt - 1'b1; // read
+                    {1'b0, 1'b1}: fifo_cnt <= type(fifo_cnt)'(fifo_cnt + 1'b1); // write
+                    default     : fifo_cnt <= fifo_cnt;        // no operation or read, write simultaneously
+                endcase
+            end
+        end
+
+    //=================================================================
     // Empty & Full
     //=================================================================
-        assign fifo_empty = wr_ptr == rd_ptr;
-        assign fifo_full  = {~wr_ptr[AWIDTH], wr_ptr[AWIDTH-1:0]} == rd_ptr;
+        assign fifo_empty = ~|fifo_cnt;
+        assign fifo_full  = fifo_cnt == DEPTH;
 
     //=================================================================
     // Handshake
@@ -75,12 +102,24 @@ Sync FIFO
     //=================================================================
         always_ff @(posedge clk or negedge rst_n) begin
             if (~rst_n) begin
-                wr_ptr <= {AWIDTH+1{1'b0}};
-                rd_ptr <= {AWIDTH+1{1'b0}};
+                wr_ptr      <= {AWIDTH+1{1'b0}};
+                rd_ptr      <= {AWIDTH+1{1'b0}};
+                // dummy_wire1 <= 1'b0;
+                // dummy_wire1 <= 1'b0;
             end
             else begin
-                if (rd_en) {dummy_wire1, rd_ptr} <= rd_ptr + 1'b1;
-                if (wr_en) {dummy_wire2, wr_ptr} <= wr_ptr + 1'b1;
+                if (rd_en) begin
+                    if (rd_ptr < DEPTH-1)
+                        rd_ptr <= type(rd_ptr)'(rd_ptr + 1'b1);
+                    else 
+                        rd_ptr <= {AWIDTH+2{1'b0}};
+                end
+                if (wr_en) begin
+                    if (wr_ptr < DEPTH-1)
+                        wr_ptr <= type(wr_ptr)'(wr_ptr + 1'b1);
+                    else 
+                        wr_ptr <= {AWIDTH+2{1'b0}};
+                end
             end
         end
 
@@ -88,16 +127,9 @@ Sync FIFO
     // Mem access
     //=================================================================
         always_ff @(posedge clk or negedge rst_n) begin
-            if (~rst_n) begin
-                for (int i=0; i<DEPTH; i=i+1) begin
-                    data_mem[i] <= {DWIDTH{1'b0}};
-                end
-            end
-            else begin
-                if (wr_en) data_mem[wr_ptr[AWIDTH-1:0]] <= req_data;
-            end
+            if (wr_en) pld_mem[wr_ptr[AWIDTH-1:0]] <= req_pld;
         end
         
-        assign ack_data = data_mem[rd_ptr[AWIDTH-1:0]];
+        assign ack_pld = pld_mem[rd_ptr[AWIDTH-1:0]];
 
     endmodule
