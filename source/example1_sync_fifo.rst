@@ -53,15 +53,14 @@ below is an implementation for sync fifo which:
     //=================================================================
     // Internal Signal
     //=================================================================
-        PLD_TYPE            pld_mem  [DEPTH-1:0];
-        logic [AWIDTH  :0]  wr_ptr              ;
-        logic [AWIDTH  :0]  rd_ptr              ;
-        logic               rd_en               ;
-        logic               wr_en               ;
-        logic [AWIDTH  :0]  fifo_cnt            ;
-        logic               fifo_full           ;
-        logic               fifo_empty          ;
-        // dummy wire to satisfy compiler
+        PLD_TYPE                pld_mem  [DEPTH-1:0];
+        logic [AWIDTH-1  :0]    wr_ptr              ;
+        logic [AWIDTH-1  :0]    rd_ptr              ;
+        logic                   rd_en               ;
+        logic                   wr_en               ;
+        logic [AWIDTH    :0]    fifo_cnt            ;
+        logic                   fifo_full           ;
+        logic                   fifo_empty          ;
 
     //=================================================================
     // WR/RD enable
@@ -74,7 +73,7 @@ below is an implementation for sync fifo which:
     //=================================================================
         always_ff @(posedge clk or negedge rst_n) begin
             if (~rst_n) begin
-                fifo_cnt <= {AWIDTH{1'b0}};
+                fifo_cnt <= {AWIDTH+1{1'b0}};
             end
             else begin
                 case ({rd_en, wr_en})
@@ -102,23 +101,21 @@ below is an implementation for sync fifo which:
     //=================================================================
         always_ff @(posedge clk or negedge rst_n) begin
             if (~rst_n) begin
-                wr_ptr      <= {AWIDTH+1{1'b0}};
-                rd_ptr      <= {AWIDTH+1{1'b0}};
-                // dummy_wire1 <= 1'b0;
-                // dummy_wire1 <= 1'b0;
+                wr_ptr      <= {AWIDTH{1'b0}};
+                rd_ptr      <= {AWIDTH{1'b0}};
             end
             else begin
                 if (rd_en) begin
                     if (rd_ptr < DEPTH-1)
                         rd_ptr <= type(rd_ptr)'(rd_ptr + 1'b1);
                     else 
-                        rd_ptr <= {AWIDTH+2{1'b0}};
+                        rd_ptr <= {AWIDTH{1'b0}};
                 end
                 if (wr_en) begin
                     if (wr_ptr < DEPTH-1)
                         wr_ptr <= type(wr_ptr)'(wr_ptr + 1'b1);
                     else 
-                        wr_ptr <= {AWIDTH+2{1'b0}};
+                        wr_ptr <= {AWIDTH{1'b0}};
                 end
             end
         end
@@ -126,10 +123,9 @@ below is an implementation for sync fifo which:
     //=================================================================
     // Mem access
     //=================================================================
-        always_ff @(posedge clk or negedge rst_n) begin
-            if (wr_en) pld_mem[wr_ptr[AWIDTH-1:0]] <= req_pld;
+        always_ff @(posedge clk) begin
+            if (wr_en) pld_mem[wr_ptr] <= req_pld;
         end
-        
-        assign ack_pld = pld_mem[rd_ptr[AWIDTH-1:0]];
+        assign ack_pld = pld_mem[rd_ptr];
 
     endmodule
