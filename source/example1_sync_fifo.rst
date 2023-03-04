@@ -58,7 +58,7 @@ below is an implementation for sync fifo which:
         logic [AWIDTH-1  :0]    rd_ptr              ;
         logic                   rd_en               ;
         logic                   wr_en               ;
-        logic [AWIDTH    :0]    fifo_cnt            ;
+        logic [AWIDTH    :0]    fifo_cnt            ; // add one bit to represent 0 ~ DEPTH states
         logic                   fifo_full           ;
         logic                   fifo_empty          ;
 
@@ -77,7 +77,7 @@ below is an implementation for sync fifo which:
             end
             else begin
                 case ({rd_en, wr_en})
-                    {1'b1, 1'b0}: fifo_cnt <= fifo_cnt - 1'b1; // read
+                    {1'b1, 1'b0}: fifo_cnt <= type(fifo_cnt)'(fifo_cnt - 1'b1); // read
                     {1'b0, 1'b1}: fifo_cnt <= type(fifo_cnt)'(fifo_cnt + 1'b1); // write
                     default     : fifo_cnt <= fifo_cnt;        // no operation or read, write simultaneously
                 endcase
