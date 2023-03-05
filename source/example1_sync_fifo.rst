@@ -41,12 +41,12 @@ below is an implementation for sync fifo which:
             input   logic               clk    ,
             input   logic               rst_n  ,
             // Req
-            input   logic               req_vld,
+            input                       req_vld,
             output  logic               req_rdy,
             input   PLD_TYPE            req_pld,
             // ACK
             output  logic               ack_vld,
-            input   logic               ack_rdy,
+            input                       ack_rdy,
             output  PLD_TYPE            ack_pld
         );
 
@@ -58,7 +58,7 @@ below is an implementation for sync fifo which:
         logic [AWIDTH-1  :0]    rd_ptr              ;
         logic                   rd_en               ;
         logic                   wr_en               ;
-        logic [AWIDTH    :0]    fifo_cnt            ; // add one bit to represent 0 ~ DEPTH states
+        logic [AWIDTH    :0]    fifo_cnt            ;
         logic                   fifo_full           ;
         logic                   fifo_empty          ;
 
@@ -77,8 +77,8 @@ below is an implementation for sync fifo which:
             end
             else begin
                 case ({rd_en, wr_en})
-                    {1'b1, 1'b0}: fifo_cnt <= type(fifo_cnt)'(fifo_cnt - 1'b1); // read
-                    {1'b0, 1'b1}: fifo_cnt <= type(fifo_cnt)'(fifo_cnt + 1'b1); // write
+                    {1'b1, 1'b0}: fifo_cnt <= (AWIDTH+1)'(fifo_cnt - 1'b1); // read, old version vcs/xrun does not support type(fifo_cnt)'
+                    {1'b0, 1'b1}: fifo_cnt <= (AWIDTH+1)'(fifo_cnt + 1'b1); // write 
                     default     : fifo_cnt <= fifo_cnt;        // no operation or read, write simultaneously
                 endcase
             end
@@ -107,13 +107,13 @@ below is an implementation for sync fifo which:
             else begin
                 if (rd_en) begin
                     if (rd_ptr < DEPTH-1)
-                        rd_ptr <= type(rd_ptr)'(rd_ptr + 1'b1);
+                        rd_ptr <= AWIDTH'(rd_ptr + 1'b1);
                     else 
                         rd_ptr <= {AWIDTH{1'b0}};
                 end
                 if (wr_en) begin
                     if (wr_ptr < DEPTH-1)
-                        wr_ptr <= type(wr_ptr)'(wr_ptr + 1'b1);
+                        wr_ptr <= AWIDTH'(wr_ptr + 1'b1);
                     else 
                         wr_ptr <= {AWIDTH{1'b0}};
                 end
