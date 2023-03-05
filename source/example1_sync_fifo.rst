@@ -41,12 +41,12 @@ below is an implementation for sync fifo which:
             input   logic               clk    ,
             input   logic               rst_n  ,
             // Req
-            input                       req_vld,
+            input   logic               req_vld,
             output  logic               req_rdy,
             input   PLD_TYPE            req_pld,
             // ACK
             output  logic               ack_vld,
-            input                       ack_rdy,
+            input   logic               ack_rdy,
             output  PLD_TYPE            ack_pld
         );
 
