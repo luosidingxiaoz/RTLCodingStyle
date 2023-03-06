@@ -32,35 +32,34 @@ below is an implementation for sync fifo which:
     // Additional Comments:
     // 
     //////////////////////////////////////////////////////////////////////////////////
-    module sync_fifo
-        #(
-            parameter   int unsigned DEPTH    = 8             ,
-            parameter   type         PLD_TYPE = logic[32-1:0] ,  
-            localparam  int unsigned AWIDTH   = $clog2(DEPTH)
-        )(
-            input   logic               clk    ,
-            input   logic               rst_n  ,
-            // Req
-            input   logic               req_vld,
-            output  logic               req_rdy,
-            input   PLD_TYPE            req_pld,
-            // ACK
-            output  logic               ack_vld,
-            input   logic               ack_rdy,
-            output  PLD_TYPE            ack_pld
-        );
+    module sync_fifo #(
+        parameter   int unsigned DEPTH    = 8             ,
+        parameter   type         PLD_TYPE = logic[32-1:0] ,  
+        localparam  int unsigned AWIDTH   = $clog2(DEPTH)
+    )(
+        input   logic               clk    ,
+        input   logic               rst_n  ,
+        // Req
+        input   logic               req_vld,
+        output  logic               req_rdy,
+        input   PLD_TYPE            req_pld,
+        // ACK
+        output  logic               ack_vld,
+        input   logic               ack_rdy,
+        output  PLD_TYPE            ack_pld
+    );
 
     //=================================================================
     // Internal Signal
     //=================================================================
-        PLD_TYPE                pld_mem  [DEPTH-1:0];
-        logic [AWIDTH-1  :0]    wr_ptr              ;
-        logic [AWIDTH-1  :0]    rd_ptr              ;
-        logic                   rd_en               ;
-        logic                   wr_en               ;
-        logic [AWIDTH    :0]    fifo_cnt            ;
-        logic                   fifo_full           ;
-        logic                   fifo_empty          ;
+        PLD_TYPE                    pld_mem  [DEPTH-1:0];
+        logic       [AWIDTH-1  :0]  wr_ptr              ;
+        logic       [AWIDTH-1  :0]  rd_ptr              ;
+        logic                       rd_en               ;
+        logic                       wr_en               ;
+        logic       [AWIDTH    :0]  fifo_cnt            ;
+        logic                       fifo_full           ;
+        logic                       fifo_empty          ;
 
     //=================================================================
     // WR/RD enable
@@ -101,21 +100,17 @@ below is an implementation for sync fifo which:
     //=================================================================
         always_ff @(posedge clk or negedge rst_n) begin
             if (~rst_n) begin
-                wr_ptr      <= {AWIDTH{1'b0}};
-                rd_ptr      <= {AWIDTH{1'b0}};
+                wr_ptr <= {AWIDTH{1'b0}};
+                rd_ptr <= {AWIDTH{1'b0}};
             end
             else begin
                 if (rd_en) begin
-                    if (rd_ptr < DEPTH-1)
+                    if (rd_ptr <= DEPTH-1)
                         rd_ptr <= AWIDTH'(rd_ptr + 1'b1);
-                    else 
-                        rd_ptr <= {AWIDTH{1'b0}};
                 end
                 if (wr_en) begin
-                    if (wr_ptr < DEPTH-1)
+                    if (wr_ptr <= DEPTH-1)
                         wr_ptr <= AWIDTH'(wr_ptr + 1'b1);
-                    else 
-                        wr_ptr <= {AWIDTH{1'b0}};
                 end
             end
         end
