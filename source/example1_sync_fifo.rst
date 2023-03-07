@@ -102,13 +102,11 @@ below is an implementation for sync fifo which:
             if (~rst_n) begin
                 wr_ptr <= {AWIDTH{1'b0}};
             end
-            else begin
-                if (wr_en) begin
-                    if (wr_ptr < DEPTH-1)
-                        wr_ptr <= AWIDTH'(wr_ptr + 1'b1);
-                    else 
-                        wr_ptr <= {AWIDTH{1'b0}};
-                end
+            else if (wr_en) begin
+                if (wr_ptr < DEPTH-1)
+                    wr_ptr <= AWIDTH'(wr_ptr + 1'b1);
+                else 
+                    wr_ptr <= {AWIDTH{1'b0}};
             end
         end
 
@@ -116,13 +114,11 @@ below is an implementation for sync fifo which:
             if (~rst_n) begin
                 rd_ptr <= {AWIDTH{1'b0}};
             end
-            else begin
-                if (rd_en) begin
-                    if (rd_ptr < DEPTH-1)
-                        rd_ptr <= AWIDTH'(rd_ptr + 1'b1);
-                    else 
-                        rd_ptr <= {AWIDTH{1'b0}};
-                end
+            else if (rd_en) begin
+                if (rd_ptr < DEPTH-1)
+                    rd_ptr <= AWIDTH'(rd_ptr + 1'b1);
+                else 
+                    rd_ptr <= {AWIDTH{1'b0}};
             end
         end
 
