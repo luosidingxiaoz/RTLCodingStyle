@@ -3,7 +3,7 @@ Combinational logic
 
 **assign** and **always_comb** are used to represent combinational logic.
 
-
+ 
 - **assign**
 
 **assign** is recommended to be used for the following occasions：
