@@ -20,7 +20,7 @@ For example:
     // a reg slice defination
     // support three mode: forward mode (4'b0001), backward mode (4'b0010), full mode (4'b0100), and bypass mode (4'b1000)
     module reg_slice #(
-        parameter logic [2:0]   FUNC_MODE = 4'b0001
+        parameter logic [2:0]   FUNC_MODE = 4'b0001 ,
         parameter type          PLD_TYPE  = logic
     )(
         input  logic          clk  ,
