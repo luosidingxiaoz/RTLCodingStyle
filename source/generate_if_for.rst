@@ -36,13 +36,13 @@ For example:
             if (FUNC_MODE == 4'b0001) begin:Forward_Mode
                 ......
             end
-            elif (FUNC_MODE == 4'b0010) begin:Backward_Mode
+            else if (FUNC_MODE == 4'b0010) begin:Backward_Mode
                 ......
             end
-            elif (FUNC_MODE == 4'b0100) begin:Full_Mode
+            else if (FUNC_MODE == 4'b0100) begin:Full_Mode
                 ......
             end
-            elif (FUNC_MODE == 4'b1000) begin:Bypass_Mode
+            else if (FUNC_MODE == 4'b1000) begin:Bypass_Mode
                 ......
             end
         endgenerate
